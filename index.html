@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>🚛 Juego Arcade de Camiones</title>
+  <link rel="stylesheet" href="style.css"> <!-- estilos externos -->
+</head>
+<body>
+  <h2 style="color:white;">🚛 Juego Arcade de Camiones</h2>
+
+  <!-- Modal de Registro -->
+  <div id="registerModal">
+    <form id="registerForm">
+      <h2>Registro</h2>
+      <input type="text" id="name" placeholder="Nombre" required />
+      <input type="email" id="email" placeholder="Correo" required />
+      <input type="tel" id="phone" placeholder="Celular" required />
+      <button type="submit">Comenzar</button>
+    </form>
+  </div>
+  <!-- Modal de Game Over -->
+  <div id="gameOverModal" style="display:none;">
+  <div id="gameOverContent">
+    <h2 id="gameOverTitle">GAME OVER</h2>
+    <p id="gameOverMessage"></p>
+    <p id="finalScore"></p>
+    <button onclick="restartGame()">🔄 Volver a jugar</button>
+  </div>
+</div>
+
+  <!-- Phaser -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+
+  <!-- Escenas y lógica del juego -->
+  <script src="startScene.js"></script>
+  <script src="gameScene.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
