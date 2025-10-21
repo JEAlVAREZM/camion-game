@@ -5,7 +5,7 @@ class StartScene extends Phaser.Scene {
 
   preload() {
     // Cargar imágenes necesarias para la pantalla de inicio
-    this.load.image('road', 'assets/road-2.png');
+    this.load.image('road', 'assets/road.png');
     this.load.image('truck', 'assets/truck.png');
     this.load.image('cargo', 'assets/cargo.png');
     this.load.image('obstacle', 'assets/obstacle.png');

@@ -4,103 +4,100 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-  this.add.image(960, 540, 'fondo').setDisplaySize(1920, 1080);
+    this.bgMusic = this.sound.add('music', { volume: 0.5, loop: true });
+    this.bgMusic.play();
 
-  this.lanes = [700, 960, 1220, 1480]; // 4 carriles centrados en la carretera del fondo
-  this.currentLane = 1;
+    this.score = 0;
+    this.coneHits = 0;
+    this.holeHits = 0;
+    this.gameOver = false;
 
-  this.truck = this.physics.add.sprite(this.lanes[this.currentLane], 900, 'truck');
-  this.truck.setDisplaySize(120, 200);
-  this.truck.setCollideWorldBounds(true);
+    this.lanes = [70, 160, 250, 340];
+    this.currentLane = 1;
 
-  this.cargos = this.physics.add.group();
-  this.obstacles = this.physics.add.group();
-  this.cyclists = this.physics.add.group();
-  this.holes = this.physics.add.group();
+    this.road = this.add.tileSprite(200, 300, 400, 600, 'road');
 
-  this.cursors = this.input.keyboard.createCursorKeys();
+    this.truck = this.physics.add.sprite(this.lanes[this.currentLane], 500, 'truck');
+    this.truck.setDisplaySize(64, 128);
+    this.truck.setCollideWorldBounds(true);
 
-  this.scoreText = this.add.text(50, 30, "Puntos: 0", {
-    fontSize: "32px",
-    fill: "#fff",
-    fontFamily: "'Press Start 2P'"
-  });
+    this.cargos = this.physics.add.group();
+    this.obstacles = this.physics.add.group();
+    this.cyclists = this.physics.add.group();
+    this.holes = this.physics.add.group();
 
-  // Eventos
-  this.time.addEvent({ delay: 1500, callback: () => this.dropCargo(), loop: true });
-  this.time.addEvent({ delay: 2000, callback: () => this.dropObstacle(), loop: true });
-  this.time.addEvent({ delay: 5000, callback: () => this.dropCyclist(), loop: true });
-  this.time.addEvent({ delay: 3500, callback: () => this.dropHole(), loop: true });
+    this.cursors = this.input.keyboard.createCursorKeys();
 
-  // Colisiones
-  this.physics.add.overlap(this.truck, this.cargos, (t, c) => this.collectCargo(c), null, this);
-  this.physics.add.overlap(this.truck, this.obstacles, (t, o) => this.hitObstacle(o), null, this);
-  this.physics.add.overlap(this.truck, this.cyclists, (t, c) => this.hitCyclist(c), null, this);
-  this.physics.add.overlap(this.truck, this.holes, (t, h) => this.hitHole(h), null, this);
-}
+    this.scoreText = this.add.text(10, 10, 'Puntos: 0', { fontSize: '20px', fill: '#fff' });
 
-update() {
-  if (this.gameOver) return;
+    // Textos de game over (ocultos inicialmente)
+    this.gameOverText = this.add.text(200, 250, '', { fontSize: '24px', fill: '#ff0000' }).setOrigin(0.5).setVisible(false);
+    this.restartText = this.add.text(200, 300, '', { fontSize: '20px', fill: '#fff' }).setOrigin(0.5).setVisible(false);
 
-  if (Phaser.Input.Keyboard.JustDown(this.cursors.left) && this.currentLane > 0) {
-    this.currentLane--;
-    this.truck.x = this.lanes[this.currentLane];
+    this.restartText.on('pointerdown', () => {
+      this.scene.start('StartScene');
+    });
+
+    // Eventos de spawn
+    this.time.addEvent({ delay: 1500, callback: () => this.dropCargo(), loop: true });
+    this.time.addEvent({ delay: 2000, callback: () => this.dropObstacle(), loop: true });
+    this.time.addEvent({ delay: 5000, callback: () => this.dropCyclist(), loop: true });
+    this.time.addEvent({ delay: 3500, callback: () => this.dropHole(), loop: true });
+
+    // Colisiones
+    this.physics.add.overlap(this.truck, this.cargos, (t, c) => this.collectCargo(c), null, this);
+    this.physics.add.overlap(this.truck, this.obstacles, (t, o) => this.hitObstacle(o), null, this);
+    this.physics.add.overlap(this.truck, this.cyclists, (t, c) => this.hitCyclist(c), null, this);
+    this.physics.add.overlap(this.truck, this.holes, (t, h) => this.hitHole(h), null, this);
   }
-  if (Phaser.Input.Keyboard.JustDown(this.cursors.right) && this.currentLane < this.lanes.length - 1) {
-    this.currentLane++;
-    this.truck.x = this.lanes[this.currentLane];
-  }
-}
 
-update() {
-  if (this.gameOver) return;
+  update() {
+    if (this.gameOver) return;
 
-  // carretera en movimiento
-  this.road.tilePositionY -= 6; // un pelín más rápido por altura 800
+    this.road.tilePositionY -= 5;
 
-  // movimiento entre carriles
-  if (Phaser.Input.Keyboard.JustDown(this.cursors.left) && this.currentLane > 0) {
-    this.currentLane--;
-    this.truck.x = this.lanes[this.currentLane];
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.left) && this.currentLane > 0) {
+      this.currentLane--;
+      this.truck.x = this.lanes[this.currentLane];
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.right) && this.currentLane < this.lanes.length - 1) {
+      this.currentLane++;
+      this.truck.x = this.lanes[this.currentLane];
+    }
   }
-  if (Phaser.Input.Keyboard.JustDown(this.cursors.right) && this.currentLane < this.lanes.length - 1) {
-    this.currentLane++;
-    this.truck.x = this.lanes[this.currentLane];
-  }
-}
 
   // Spawners
- dropCargo() {
-  if (this.gameOver) return;
-  let lane = Phaser.Math.Between(0, this.lanes.length - 1);
-  let cargo = this.cargos.create(this.lanes[lane], -50, 'cargo');
-  cargo.setVelocityY(400);
-  cargo.setDisplaySize(70, 70);
-}
+  dropCargo() {
+    if (this.gameOver) return;
+    const lane = Phaser.Math.Between(0, this.lanes.length - 1);
+    let cargo = this.cargos.create(this.lanes[lane], 0, 'cargo');
+    cargo.setVelocityY(200);
+    cargo.setDisplaySize(48, 48);
+  }
 
- dropObstacle() {
-  if (this.gameOver) return;
-  let lane = Phaser.Math.Between(0, this.lanes.length - 1);
-  let obstacle = this.obstacles.create(this.lanes[lane], -50, 'obstacle');
-  obstacle.setVelocityY(450);
-  obstacle.setDisplaySize(70, 70);
-}
+  dropObstacle() {
+    if (this.gameOver) return;
+    const lane = Phaser.Math.Between(0, this.lanes.length - 1);
+    let obstacle = this.obstacles.create(this.lanes[lane], 0, 'obstacle');
+    obstacle.setVelocityY(220);
+    obstacle.setDisplaySize(48, 48);
+  }
 
- dropCyclist() {
-  if (this.gameOver) return;
-  let lane = Phaser.Math.Between(0, this.lanes.length - 1);
-  let cyclist = this.cyclists.create(this.lanes[lane], -50, 'cyclist');
-  cyclist.setVelocityY(380);
-  cyclist.setDisplaySize(120, 200);
-}
+  dropCyclist() {
+    if (this.gameOver) return;
+    const lane = Phaser.Math.Between(0, this.lanes.length - 1);
+    let cyclist = this.cyclists.create(this.lanes[lane], 0, 'cyclist');
+    cyclist.setVelocityY(180);
+    cyclist.setDisplaySize(64, 128);
+  }
 
- dropHole() {
-  if (this.gameOver) return;
-  let lane = Phaser.Math.Between(0, this.lanes.length - 1);
-  let hole = this.holes.create(this.lanes[lane], -50, 'hole');
-  hole.setVelocityY(420);
-  hole.setDisplaySize(100, 100);
-}
+  dropHole() {
+    if (this.gameOver) return;
+    const lane = Phaser.Math.Between(0, this.lanes.length - 1);
+    let hole = this.holes.create(this.lanes[lane], 0, 'hole');
+    hole.setVelocityY(200);
+    hole.setDisplaySize(64, 64);
+  }
 
   // Colisiones
   collectCargo(cargo) {
