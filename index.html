@@ -30,17 +30,15 @@
   </div>
 
   <!-- Modal Instrucciones -->
-  <div id="instructionsModal" style="display:none;">
-    <div id="instructionsContent">
-      <h2>ℹ️ Instrucciones</h2>
-      <p>🚛 Mueve el camión con ← →</p>
-      <p>📦 Recoge cajas para ganar puntos</p>
-      <p>🚧 Evita conos (3 choques = game over)</p>
-      <p>🕳️ Evita huecos (2 choques = game over)</p>
-      <p>🚴‍♂️ No atropelles ciclistas (game over instantáneo)</p>
-      <button onclick="closeModal('instructionsModal')">Cerrar</button>
-    </div>
+  <div id="instructionsModal" class="modal">
+  <div class="modal-content">
+    <h2>Instrucciones</h2>
+    <p>Mueve el camión con ← → para esquivar obstáculos.</p>
+    <p>Recoge cajas para sumar puntos.📦</p>
+    <p>Evita ciclistas, conos y huecos.🚲</p>
+    <button onclick="closeModal('instructionsModal')">Cerrar</button>
   </div>
+</div>
 
 
   <!-- Phaser -->

@@ -6,7 +6,7 @@ class GameScene extends Phaser.Scene {
   create() {
     this.bgMusic = this.sound.add('music', { volume: 0.5, loop: true });
     this.bgMusic.play();
-
+    
     this.score = 0;
     this.coneHits = 0;
     this.holeHits = 0;
@@ -15,7 +15,14 @@ class GameScene extends Phaser.Scene {
     this.lanes = [70, 160, 250, 340];
     this.currentLane = 1;
 
-    this.road = this.add.tileSprite(200, 300, 400, 600, 'road');
+    this.road = this.add.tileSprite(
+    this.sys.game.config.width / 2,  // Centrado en X
+    this.sys.game.config.height / 2, // Centrado en Y
+    this.sys.game.config.width,      // Ancho del canvas
+    this.sys.game.config.height,     // Alto del canvas
+    'road'
+    );
+
 
     this.truck = this.physics.add.sprite(this.lanes[this.currentLane], 500, 'truck');
     this.truck.setDisplaySize(64, 128);
@@ -51,7 +58,10 @@ class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.truck, this.holes, (t, h) => this.hitHole(h), null, this);
   }
 
+
+
   update() {
+    this.road.tilePositionY -= 5; // mueve la carretera
     if (this.gameOver) return;
 
     this.road.tilePositionY -= 5;

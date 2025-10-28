@@ -4,14 +4,17 @@ class StartScene extends Phaser.Scene {
   }
 
   preload() {
-    // Cargar imágenes necesarias para la pantalla de inicio
-    this.load.image('road', 'assets/road.png');
+    // Fondos y sprites
+    this.load.image('road', 'assets/road-2.png');
+    this.load.image('btnPlay', 'assets/btn_play.png'); 
+    this.load.image('btnInfo', 'assets/btn_info.png');  
     this.load.image('truck', 'assets/truck.png');
     this.load.image('cargo', 'assets/cargo.png');
     this.load.image('obstacle', 'assets/obstacle.png');
     this.load.image('cyclist', 'assets/cyclist.png');
     this.load.image('hole', 'assets/hole.png');
 
+    // Sonidos
     this.load.audio('music', 'assets/sounds/music.mp3');
     this.load.audio('pickup', 'assets/sounds/pickup.mp3');
     this.load.audio('crash', 'assets/sounds/crash.mp3');
@@ -20,36 +23,24 @@ class StartScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(960, 540, 'fondo').setDisplaySize(1920, 1080);
-    // Fondo animado
-    this.add.tileSprite(200, 300, 400, 600, 'road');
+    const { width, height } = this.scale;
 
-    // Título del juego
-    this.add.text(200, 150, "🚛 TRANSPORTES TRANES", {
-      fontSize: '28px',
-      fill: '#fff',
-      fontStyle: 'Press Start 2P'
-    }).setOrigin(0.5);
+    // Fondo (road ocupa todo el canvas como guía de la carretera)
+    this.add.tileSprite(width/2, height/2, width, height, 'road');
 
     // Botón JUGAR
-    let startButton = this.add.text(200, 300, "▶ JUGAR", {
-      fontSize: '32px',
-      fill: '#000',
-      backgroundColor: '#fff',
-      fontStyle: 'Press Start 2P',
-      padding: { x: 10, y: 5 }
-    }).setOrigin(0.5).setInteractive();
+    let startButton = this.add.image(width/2, height/2 - 50, 'btnPlay')
+      .setDisplaySize(350, 110)
+      .setInteractive();
 
     startButton.on('pointerdown', () => {
       this.scene.start('GameScene');
     });
 
-    // Botón de instrucciones que abre modal HTML
-    let instructionsButton = this.add.text(200, 400, "ℹ️ Instrucciones", {
-      fontSize: '20px',
-      fill: '#fff',
-      fontStyle: 'Press Start 2P'
-    }).setOrigin(0.5).setInteractive();
+    // Botón INSTRUCCIONES
+    let instructionsButton = this.add.image(width/2, height/2 + 100, 'btnInfo')
+      .setDisplaySize(300, 90)
+      .setInteractive();
 
     instructionsButton.on('pointerdown', () => {
       openModal('instructionsModal'); // función de modals.js

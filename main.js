@@ -62,7 +62,7 @@ window.restartGame = function () {
 const config = {
   type: Phaser.AUTO,
   width: 400,
-  height: 600,
+  height: window.innerHeight,
   physics: { default: "arcade", arcade: { debug: false } },
   scene: [StartScene, GameScene]
 };
