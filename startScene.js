@@ -7,6 +7,7 @@ class StartScene extends Phaser.Scene {
     // Fondos y sprites
     this.load.image('road', 'assets/road-2.png');
     this.load.image('btnPlay', 'assets/btn_play.png'); 
+    this.load.image('btnMaquinaria', 'assets/btn_maquinaria.png'); 
     this.load.image('btnInfo', 'assets/btn_info.png');  
     this.load.image('truck', 'assets/truck.png');
     this.load.image('cargo', 'assets/cargo.png');
@@ -24,6 +25,12 @@ class StartScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
+
+    const btnMaquinaria = this.add.image(width/2, height/2 + 70, 'btnMaquinaria')
+      .setDisplaySize(350, 110)
+      .setInteractive();
+
+    btnMaquinaria.on('pointerdown', () => this.scene.start('LoaderScene'));
 
     // Fondo (road ocupa todo el canvas como guía de la carretera)
     this.add.tileSprite(width/2, height/2, width, height, 'road');

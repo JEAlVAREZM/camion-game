@@ -64,6 +64,7 @@ const config = {
   width: 400,
   height: window.innerHeight,
   physics: { default: "arcade", arcade: { debug: false } },
+  scene: [StartScene, GameScene, LoaderScene],
   scene: [StartScene, GameScene]
 };
 
