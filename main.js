@@ -62,10 +62,22 @@ window.restartGame = function () {
 const config = {
   type: Phaser.AUTO,
   width: 400,
-  height: window.innerHeight,
-  physics: { default: "arcade", arcade: { debug: false } },
-  scene: [StartScene, GameScene, LoaderScene],
-  scene: [StartScene, GameScene]
+  height: 1080,
+  backgroundColor: '#000',
+  parent: 'game-container',
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  physics: {
+    default: 'arcade',
+    arcade: { debug: false }
+  },
+  scene: [
+    StartScene,     // Menú
+    GameScene,      // Carretera
+    MaquinariaScene // Minijuego maquinaria (definido en loaderScene.js)
+  ]
 };
 
 function restartGame() {

@@ -6,9 +6,11 @@ class StartScene extends Phaser.Scene {
   preload() {
     // Fondos y sprites
     this.load.image('road', 'assets/road-2.png');
-    this.load.image('btnPlay', 'assets/btn_play.png'); 
-    this.load.image('btnMaquinaria', 'assets/btn_maquinaria.png'); 
-    this.load.image('btnInfo', 'assets/btn_info.png');  
+    this.load.image('btnPlay', 'assets/btn_play.png');
+    this.load.image('btnMaquinaria', 'assets/btn_maquinaria.png');
+    this.load.image('btnInfo', 'assets/btn_info.png');
+
+    // También se usan luego en GameScene (si ya están en caché, no pasa nada):
     this.load.image('truck', 'assets/truck.png');
     this.load.image('cargo', 'assets/cargo.png');
     this.load.image('obstacle', 'assets/obstacle.png');
@@ -26,31 +28,25 @@ class StartScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
 
-    const btnMaquinaria = this.add.image(width/2, height/2 + 70, 'btnMaquinaria')
-      .setDisplaySize(350, 110)
-      .setInteractive();
+    // Carretera como fondo del menú (cubre todo)
+    this.add.tileSprite(width / 2, height / 2, width, height, 'road');
 
-    btnMaquinaria.on('pointerdown', () => this.scene.start('LoaderScene'));
+    // Botón JUGAR CAMIÓN
+    const btnCamion = this.add.image(width / 2, height / 2 - 60, 'btnPlay')
+      .setInteractive()
+      .setScale(0.6);
+    btnCamion.on('pointerdown', () => this.scene.start('GameScene'));
 
-    // Fondo (road ocupa todo el canvas como guía de la carretera)
-    this.add.tileSprite(width/2, height/2, width, height, 'road');
+    // Botón JUGAR MAQUINARIA (clave correcta + escena correcta)
+    const btnMaquinaria = this.add.image(width / 2, height / 2 + 40, 'btnMaquinaria')
+      .setInteractive()
+      .setScale(0.6);
+    btnMaquinaria.on('pointerdown', () => this.scene.start('maquinariaScene'));
 
-    // Botón JUGAR
-    let startButton = this.add.image(width/2, height/2 - 50, 'btnPlay')
-      .setDisplaySize(350, 110)
-      .setInteractive();
-
-    startButton.on('pointerdown', () => {
-      this.scene.start('GameScene');
-    });
-
-    // Botón INSTRUCCIONES
-    let instructionsButton = this.add.image(width/2, height/2 + 100, 'btnInfo')
-      .setDisplaySize(300, 90)
-      .setInteractive();
-
-    instructionsButton.on('pointerdown', () => {
-      openModal('instructionsModal'); // función de modals.js
-    });
+    // Botón INSTRUCCIONES (abre modal HTML)
+    const btnInfo = this.add.image(width / 2, height / 2 + 140, 'btnInfo')
+      .setInteractive()
+      .setScale(0.6);
+    btnInfo.on('pointerdown', () => openModal('instructionsModal'));
   }
 }
