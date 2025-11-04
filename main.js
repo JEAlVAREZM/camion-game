@@ -80,12 +80,34 @@ const config = {
   ]
 };
 
-function restartGame() {
-  document.getElementById("gameOverModal").style.display = "none";
+// 🔁 Reiniciar camión
+window.restartCamion = function () {
+  const modal = document.getElementById("gameOverCamionModal");
+  if (modal) modal.style.display = "none";
   if (window.game) {
     window.game.scene.stop("GameScene");
-    window.game.scene.start("GameScene"); // reinicia directo en la escena de juego
+    window.game.scene.start("GameScene");
   }
-}
+};
+
+// 🔁 Reiniciar maquinaria
+window.restartMaquinaria = function () {
+  const modal = document.getElementById("gameOverMaquinariaModal");
+  if (modal) modal.style.display = "none";
+  if (window.game) {
+    window.game.scene.stop("MaquinariaScene");
+    window.game.scene.start("MaquinariaScene");
+  }
+};
+
+// 🏠 Volver al menú principal
+window.goToMenu = function () {
+  document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
+  if (window.game) {
+    window.game.scene.stop("GameScene");
+    window.game.scene.stop("MaquinariaScene");
+    window.game.scene.start("StartScene");
+  }
+};
 
 

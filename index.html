@@ -19,15 +19,15 @@
     </form>
   </div>
 
-  <!-- Modal de Game Over -->
-  <div id="gameOverModal" style="display:none;">
-    <div id="gameOverContent">
-      <h2 id="gameOverTitle">GAME OVER</h2>
-      <p id="gameOverMessage"></p>
-      <p id="finalScore"></p>
-      <button onclick="restartGame()">🔄 Volver a jugar</button>
-    </div>
+<!-- 🔶 Modal Game Over Camión -->
+<div id="gameOverCamionModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>💥 Fin del juego</h2>
+    <p id="camionScoreText">Puntaje final: 0</p>
+    <button onclick="restartCamion()">🔁 Volver a intentar</button>
+    <button onclick="goToMenu()">🏠 Menú principal</button>
   </div>
+</div>
 
   <!-- Modal Instrucciones -->
   <div id="instructionsModal" class="modal" style="display:none;">
@@ -36,6 +36,16 @@
       <p>Camión: ← → para cambiar de carril. Suma con cajas, evita conos, huecos y ciclistas.</p>
       <p>Maquinaria: mueve la volqueta con ← →, acércate a cajas y llévalas al dock.</p>
       <button onclick="closeModal('instructionsModal')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- 🔶 Modal Game Over Maquinaria -->
+  <div id="gameOverMaquinariaModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>⏰ Tiempo agotado</h2>
+      <p id="maquinariaScoreText">Puntaje final: 0</p>
+      <button onclick="restartMaquinaria()">🔁 Volver a intentar</button>
+      <button onclick="goToMenu()">🏠 Menú principal</button>
     </div>
   </div>
 
@@ -49,7 +59,7 @@
   <script src="modals.js"></script>
   <script src="startScene.js"></script>
   <script src="gameScene.js"></script>
-  <script src="maquinariaScene.js"></script>
+  <script src="MaquinariaScene.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

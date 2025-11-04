@@ -23,30 +23,71 @@ class StartScene extends Phaser.Scene {
     this.load.audio('crash', 'assets/sounds/crash.mp3');
     this.load.audio('holeSound', 'assets/sounds/hole.mp3');
     this.load.audio('gameoverSound', 'assets/sounds/gameover.mp3');
+    this.load.audio('menuMusic', 'assets/sounds/menuMusic.mp3');
+
   }
 
-  create() {
-    const { width, height } = this.scale;
+create() {
+  const { width, height } = this.scale;
 
-    // Carretera como fondo del menú (cubre todo)
-    this.add.tileSprite(width / 2, height / 2, width, height, 'road');
+  // 🛣️ Fondo
+  this.add.tileSprite(width / 2, height / 2, width, height, 'road');
 
-    // Botón JUGAR CAMIÓN
-    const btnCamion = this.add.image(width / 2, height / 2 - 60, 'btnPlay')
-      .setInteractive()
-      .setScale(0.6);
-    btnCamion.on('pointerdown', () => this.scene.start('GameScene'));
+  
+  // 🎵 Música del menú
+if (!this.sound.get('menuMusic')) {
+  this.menuMusic = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
+  this.menuMusic.play();
+} else {
+  this.menuMusic = this.sound.get('menuMusic');
+  if (!this.menuMusic.isPlaying) this.menuMusic.play();
+}
 
-    // Botón JUGAR MAQUINARIA (clave correcta + escena correcta)
-    const btnMaquinaria = this.add.image(width / 2, height / 2 + 40, 'btnMaquinaria')
-      .setInteractive()
-      .setScale(0.6);
-    btnMaquinaria.on('pointerdown', () => this.scene.start('maquinariaScene'));
-
-    // Botón INSTRUCCIONES (abre modal HTML)
-    const btnInfo = this.add.image(width / 2, height / 2 + 140, 'btnInfo')
-      .setInteractive()
-      .setScale(0.6);
-    btnInfo.on('pointerdown', () => openModal('instructionsModal'));
+// 🔇 Función para detener música suavemente
+const stopMenuMusic = () => {
+  if (this.menuMusic && this.menuMusic.isPlaying) {
+    this.tweens.add({
+      targets: this.menuMusic,
+      volume: 0,
+      duration: 600,
+      onComplete: () => {
+        this.menuMusic.stop();
+        this.menuMusic.destroy();
+      }
+    });
   }
+};
+
+
+  // 🚛 Botón CAMIÓN
+  const btnCamion = this.add.image(width / 2, height / 2 - 60, 'btnPlay')
+    .setInteractive()
+    .setScale(0.6);
+
+  btnCamion.on('pointerdown', () => {
+    stopMenuMusic();
+    this.scene.start('GameScene');
+  });
+
+  // 🚜 Botón MAQUINARIA
+  const btnMaquinaria = this.add.image(width / 2, height / 2 + 40, 'btnMaquinaria')
+    .setInteractive()
+    .setScale(0.6);
+
+  btnMaquinaria.on('pointerdown', () => {
+    stopMenuMusic();
+    this.scene.start('MaquinariaScene');
+  });
+
+  // ℹ️ Botón INSTRUCCIONES
+  const btnInfo = this.add.image(width / 2, height / 2 + 140, 'btnInfo')
+    .setInteractive()
+    .setScale(0.6);
+
+  btnInfo.on('pointerdown', () => {
+    openModal('instructionsModal');
+  });
+}
+
+
 }

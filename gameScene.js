@@ -172,7 +172,7 @@ async endGame(message) {
       score: String(this.score)
     }).toString();
 
-    fetch(WEBAPP_URL, {
+    fetch(WEBAPP_URL, { 
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
       body
