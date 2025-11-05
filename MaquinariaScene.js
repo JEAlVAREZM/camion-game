@@ -96,6 +96,10 @@ class MaquinariaScene extends Phaser.Scene {
       callback: () => this.updateTimer(),
       loop: true
     });
+    // Reinicio de variables al empezar un nuevo intento
+    this.gameOver = false;
+    this.playedGameOverSound = false;
+    this.time.removeAllEvents(); // limpia eventos residuales
 
     // 🔊 Sonidos del juego
   this.engineSound = this.sound.add('engine', { loop: true, volume: 0.3 });
@@ -196,41 +200,53 @@ spawnMaterial(type) {
 
 
   updateTimer() {
-    this.timeLeft--;
-    this.timerText.setText(`${this.timeLeft}s`);
-
-    if (this.timeLeft <= 0) {
-      this.endGame();
-    }
+  if (this.gameOver) return; // evita seguir restando tiempo después del fin
+  this.timeLeft--;
+  this.timerText.setText(`${this.timeLeft}s`);
+  if (this.timeLeft <= 0) {
+    this.endGame();
   }
+}
 
-endGame() {
-  if (this.gameOver) return; // Evita que se ejecute más de una vez
-  this.gameOver = true;
 
+async endGame() {
+  // Pausar física y detener máquina
   this.physics.pause();
   this.machine.setVelocity(0, 0);
-
-  // 🔊 Reproducir sonido solo una vez
-  if (!this.playedGameOverSound) {
-    this.playedGameOverSound = true;
-    this.sound.play('gameoverSound', { volume: 0.7 });
-  }
 
   // Mostrar modal
   const modal = document.getElementById("gameOverMaquinariaModal");
   const scoreText = document.getElementById("maquinariaScoreText");
   if (scoreText) scoreText.innerText = `Puntaje final: ${this.score}`;
-  if (modal) modal.style.display = "block";
+  if (modal) modal.style.display = "flex";
 
-  // Detener sonido del motor si está activo
-  if (this.engineSound && this.engineSound.isPlaying) {
-    this.engineSound.stop();
+  // 🎯 Enviar puntaje al Google Sheet correcto
+  try {
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUt6tND5SyxA8_C5h2FnlLXm7dpMAKb7-ZVe7d2tyvHK1fIPJjqEG-NxG42R3wPM-w_g/exec";
+    const name = localStorage.getItem("playerName") || "Jugador";
+
+    // 🔹 Importante: incluir el campo `gameType`
+  const body = new URLSearchParams({
+    type: 'score',
+    gameType: 'maquinaria',
+    name,
+    score: String(this.score)
+  }).toString();
+
+    await fetch(WEBAPP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body
+    });
+
+    console.log("✅ Puntaje maquinaria enviado correctamente");
+
+  } catch (err) {
+    console.error("❌ Error guardando puntaje maquinaria:", err);
   }
-
-  // Detener cualquier evento del temporizador
-  this.time.removeAllEvents();
 }
+
+
 
 
 

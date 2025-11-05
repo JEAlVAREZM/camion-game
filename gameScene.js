@@ -4,6 +4,9 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
+    this.gameOverPlayed = false;
+    this.gameOverSfx = this.sound.add('gameoverSound', { loop: false, volume: 0.7 });
+
     this.bgMusic = this.sound.add('music', { volume: 0.5, loop: true });
     this.bgMusic.play();
     
@@ -154,23 +157,24 @@ async endGame(message) {
 
   // 👉 Mostrar modal HTML (no dependas de la red)
   const msgEl   = document.getElementById("gameOverMessage");
-  const scoreEl = document.getElementById("finalScore");      // asegúrate que en index.html se llame finalScore
-  const modalEl = document.getElementById("gameOverModal");
+  const scoreEl = document.getElementById("truckScoreText");
+  const modalEl = document.getElementById("gameOverTruckModal");
 
-  if (msgEl)   msgEl.innerText = message;
-  if (scoreEl) scoreEl.innerText = "Puntaje final: " + this.score;
+  if (msgEl)   msgEl.innerText = message || "🚧 Game Over";
+  if (scoreEl) scoreEl.innerText = `Puntaje final: ${this.score}`;
   if (modalEl) modalEl.style.display = "flex";
 
-  // 👉 Guardar puntaje SIN await (que no bloquee el flujo)
+  // 👉 Guardar puntaje SIN await (no bloquea el flujo)
   try {
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUt6tND5SyxA8_C5h2FnlLXm7dpMAKb7-ZVe7d2tyvHK1fIPJjqEG-NxG42R3wPM-w_g/exec"; // tu URL
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUt6tND5SyxA8_C5h2FnlLXm7dpMAKb7-ZVe7d2tyvHK1fIPJjqEG-NxG42R3wPM-w_g/exec";
     const name = localStorage.getItem("playerName") || "Jugador";
 
-    const body = new URLSearchParams({
-      type: 'score',
-      name,
-      score: String(this.score)
-    }).toString();
+  const body = new URLSearchParams({
+    type: 'score',
+    gameType: 'camion',
+    name,
+    score: String(this.score)
+  }).toString();
 
     fetch(WEBAPP_URL, { 
       method: "POST",
@@ -182,5 +186,6 @@ async endGame(message) {
     console.error("❌ Error guardando puntaje en Sheets:", err);
   }
 }
+
 
 }

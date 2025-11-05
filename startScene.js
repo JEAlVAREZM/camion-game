@@ -30,64 +30,35 @@ class StartScene extends Phaser.Scene {
 create() {
   const { width, height } = this.scale;
 
-  // 🛣️ Fondo
-  this.add.tileSprite(width / 2, height / 2, width, height, 'road');
+  // Fondo del menú
+  this.add.tileSprite(width/2, height/2, width, height, 'road');
 
-  
-  // 🎵 Música del menú
-if (!this.sound.get('menuMusic')) {
-  this.menuMusic = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
-  this.menuMusic.play();
-} else {
-  this.menuMusic = this.sound.get('menuMusic');
-  if (!this.menuMusic.isPlaying) this.menuMusic.play();
-}
-
-// 🔇 Función para detener música suavemente
-const stopMenuMusic = () => {
-  if (this.menuMusic && this.menuMusic.isPlaying) {
-    this.tweens.add({
-      targets: this.menuMusic,
-      volume: 0,
-      duration: 600,
-      onComplete: () => {
-        this.menuMusic.stop();
-        this.menuMusic.destroy();
-      }
-    });
+  // ===== Música de menú (singleton global) =====
+  if (!window.menuMusic) {
+    window.menuMusic = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
   }
-};
+  if (!window.menuMusic.isPlaying) {
+    window.menuMusic.play();
+  }
 
+  // Botones
+  const btnCamion = this.add.image(width/2, height/2 - 60, 'btnPlay').setInteractive().setScale(0.6);
+  const btnMaquinaria = this.add.image(width/2, height/2 + 40, 'btnMaquinaria').setInteractive().setScale(0.6);
+  const btnInfo = this.add.image(width/2, height/2 + 140, 'btnInfo').setInteractive().setScale(0.6);
 
-  // 🚛 Botón CAMIÓN
-  const btnCamion = this.add.image(width / 2, height / 2 - 60, 'btnPlay')
-    .setInteractive()
-    .setScale(0.6);
+  const stopMenu = () => {
+    if (window.menuMusic && window.menuMusic.isPlaying) window.menuMusic.stop();
+  };
 
-  btnCamion.on('pointerdown', () => {
-    stopMenuMusic();
-    this.scene.start('GameScene');
-  });
+  btnCamion.on('pointerdown', () => { stopMenu(); this.scene.start('GameScene'); });
+  btnMaquinaria.on('pointerdown', () => { stopMenu(); this.scene.start('MaquinariaScene'); });
+  btnInfo.on('pointerdown', () => openModal('instructionsModal'));
 
-  // 🚜 Botón MAQUINARIA
-  const btnMaquinaria = this.add.image(width / 2, height / 2 + 40, 'btnMaquinaria')
-    .setInteractive()
-    .setScale(0.6);
-
-  btnMaquinaria.on('pointerdown', () => {
-    stopMenuMusic();
-    this.scene.start('MaquinariaScene');
-  });
-
-  // ℹ️ Botón INSTRUCCIONES
-  const btnInfo = this.add.image(width / 2, height / 2 + 140, 'btnInfo')
-    .setInteractive()
-    .setScale(0.6);
-
-  btnInfo.on('pointerdown', () => {
-    openModal('instructionsModal');
-  });
+  // por si alguien cambia de escena con teclado/evento
+  this.events.on('shutdown', () => { if (window.menuMusic && window.menuMusic.isPlaying) window.menuMusic.stop(); });
+  this.events.on('sleep', () => { if (window.menuMusic && window.menuMusic.isPlaying) window.menuMusic.stop(); });
 }
+
 
 
 }

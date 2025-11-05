@@ -25,24 +25,42 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (form) {
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name  = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const phone = document.getElementById("phone").value;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      try {
-        await postForm(WEBAPP_URL, { name, email, phone }); // registra al jugador
-        localStorage.setItem("playerName", name);
-      } catch (err) {
-        console.error("❌ Error guardando en Sheets:", err);
-      }
+    const btn = form.querySelector("button[type='submit']");
+    if (btn.disabled) return; // ⚠️ evita duplicados
+    btn.disabled = true;
+    btn.textContent = "Registrando...";
 
-      // arrancar juego pase lo que pase
+    const name  = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    // Evitar registros vacíos
+    if (!name || !email || !phone) {
+      alert("Por favor completa todos los campos.");
+      btn.disabled = false;
+      btn.textContent = "Comenzar";
+      return;
+    }
+
+    try {
+      await postForm(WEBAPP_URL, { name, email, phone });
+      localStorage.setItem("playerName", name);
+
+      // ✅ cerrar modal y arrancar el juego
       document.getElementById("registerModal").style.display = "none";
       startPhaser();
-    });
-  }
+    } catch (err) {
+      console.error("❌ Error guardando en Sheets:", err);
+      alert("Ocurrió un error al registrar. Intenta nuevamente.");
+      btn.disabled = false;
+      btn.textContent = "Comenzar";
+    }
+  });
+}
+
 });
 
 // Reiniciar desde el modal de Game Over
@@ -80,13 +98,12 @@ const config = {
   ]
 };
 
-// 🔁 Reiniciar camión
-window.restartCamion = function () {
-  const modal = document.getElementById("gameOverCamionModal");
-  if (modal) modal.style.display = "none";
+window.restartTruck = function () {
+  const modal = document.getElementById('gameOverTruckModal');
+  if (modal) modal.style.display = 'none';
   if (window.game) {
-    window.game.scene.stop("GameScene");
-    window.game.scene.start("GameScene");
+    window.game.scene.stop('GameScene');
+    window.game.scene.start('GameScene');
   }
 };
 
@@ -100,13 +117,16 @@ window.restartMaquinaria = function () {
   }
 };
 
-// 🏠 Volver al menú principal
 window.goToMenu = function () {
-  document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
   if (window.game) {
-    window.game.scene.stop("GameScene");
-    window.game.scene.stop("MaquinariaScene");
-    window.game.scene.start("StartScene");
+    // cierra ambos modales por si acaso
+    const m1 = document.getElementById('gameOverTruckModal');
+    const m2 = document.getElementById('gameOverMaquinariaModal');
+    if (m1) m1.style.display = 'none';
+    if (m2) m2.style.display = 'none';
+    window.game.scene.stop('GameScene');
+    window.game.scene.stop('MaquinariaScene');
+    window.game.scene.start('StartScene');
   }
 };
 

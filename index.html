@@ -19,13 +19,15 @@
     </form>
   </div>
 
-<!-- 🔶 Modal Game Over Camión -->
-<div id="gameOverCamionModal" class="modal" style="display:none;">
+<!-- Modal Game Over CAMIÓN -->
+<div id="gameOverTruckModal" class="modal" style="display:none;">
   <div class="modal-content">
-    <h2>💥 Fin del juego</h2>
-    <p id="camionScoreText">Puntaje final: 0</p>
-    <button onclick="restartCamion()">🔁 Volver a intentar</button>
-    <button onclick="goToMenu()">🏠 Menú principal</button>
+    <h2>🚧 Game Over</h2>
+    <p id="truckScoreText">Puntaje final: 0</p>
+    <div class="modal-actions">
+      <button onclick="restartTruck()">🔁 Volver a jugar</button>
+      <button onclick="goToMenu()">🏠 Menú principal</button>
+    </div>
   </div>
 </div>
 
