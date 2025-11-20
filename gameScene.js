@@ -155,7 +155,7 @@ async endGame(message) {
   this.cyclists.clear(true, true);
   this.holes.clear(true, true);
 
-  // 👉 Mostrar modal HTML (no dependas de la red)
+
   const msgEl   = document.getElementById("gameOverMessage");
   const scoreEl = document.getElementById("truckScoreText");
   const modalEl = document.getElementById("gameOverTruckModal");
@@ -164,7 +164,7 @@ async endGame(message) {
   if (scoreEl) scoreEl.innerText = `Puntaje final: ${this.score}`;
   if (modalEl) modalEl.style.display = "flex";
 
-  // 👉 Guardar puntaje SIN await (no bloquea el flujo)
+  
   try {
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUt6tND5SyxA8_C5h2FnlLXm7dpMAKb7-ZVe7d2tyvHK1fIPJjqEG-NxG42R3wPM-w_g/exec";
     const name = localStorage.getItem("playerName") || "Jugador";

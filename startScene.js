@@ -10,7 +10,6 @@ class StartScene extends Phaser.Scene {
     this.load.image('btnMaquinaria', 'assets/btn_maquinaria.png');
     this.load.image('btnInfo', 'assets/btn_info.png');
 
-    // También se usan luego en GameScene (si ya están en caché, no pasa nada):
     this.load.image('truck', 'assets/truck.png');
     this.load.image('cargo', 'assets/cargo.png');
     this.load.image('obstacle', 'assets/obstacle.png');
@@ -33,7 +32,6 @@ create() {
   // Fondo del menú
   this.add.tileSprite(width/2, height/2, width, height, 'road');
 
-  // ===== Música de menú (singleton global) =====
   if (!window.menuMusic) {
     window.menuMusic = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
   }
@@ -54,7 +52,6 @@ create() {
   btnMaquinaria.on('pointerdown', () => { stopMenu(); this.scene.start('MaquinariaScene'); });
   btnInfo.on('pointerdown', () => openModal('instructionsModal'));
 
-  // por si alguien cambia de escena con teclado/evento
   this.events.on('shutdown', () => { if (window.menuMusic && window.menuMusic.isPlaying) window.menuMusic.stop(); });
   this.events.on('sleep', () => { if (window.menuMusic && window.menuMusic.isPlaying) window.menuMusic.stop(); });
 }

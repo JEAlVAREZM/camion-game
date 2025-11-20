@@ -56,7 +56,6 @@ class MaquinariaScene extends Phaser.Scene {
       { x: 300, y: 600 }, { x: 200, y: 700 }
     ];
 
-    // Genera los primeros 4 materiales (uno de cada tipo)
     this.spawnInitialMaterials();
 
     // Colisiones
@@ -99,7 +98,7 @@ class MaquinariaScene extends Phaser.Scene {
     // Reinicio de variables al empezar un nuevo intento
     this.gameOver = false;
     this.playedGameOverSound = false;
-    this.time.removeAllEvents(); // limpia eventos residuales
+    this.time.removeAllEvents();
 
     // 🔊 Sonidos del juego
   this.engineSound = this.sound.add('engine', { loop: true, volume: 0.3 });
@@ -111,27 +110,21 @@ class MaquinariaScene extends Phaser.Scene {
   this.engineSound.play();
   }
 
-  // 🟢 Genera los 4 materiales iniciales (uno por tipo)
   spawnInitialMaterials() {
     const types = ['stone', 'sand', 'waste', 'wood'];
 
-    // Limpia materiales previos
     this.materials.clear(true, true);
 
-    // Genera uno de cada tipo en posiciones únicas
     types.forEach(type => this.spawnMaterial(type));
   }
 
-  // 🟢 Crea un material en una zona libre aleatoria
 spawnMaterial(type) {
-  // Evita zonas ocupadas
   let freeZones = this.spawnZones.filter(zone => {
     return !this.materials.getChildren().some(mat => 
       Phaser.Math.Distance.Between(zone.x, zone.y, mat.x, mat.y) < 70
     );
   });
 
-  // Si se agotaron zonas libres, usa todas y resetea
   if (freeZones.length === 0) freeZones = [...this.spawnZones];
 
   const zone = Phaser.Utils.Array.GetRandom(freeZones);
@@ -161,7 +154,6 @@ spawnMaterial(type) {
       material.destroy();
       this.machine.setTexture('machineCarrying');
 
-      // volver a crear otro del mismo tipo en otra zona
       this.time.delayedCall(1000, () => this.spawnMaterial(type));
     }
   }
@@ -188,11 +180,9 @@ spawnMaterial(type) {
     this.machine.setTexture('machineIdle');
     this.currentMaterial = null;
 
-    // Actualizar texto de UI
     this.scoreText.setText(`Puntos: ${this.score}`);
     this.timerText.setText(`${this.timeLeft}s`);
 
-    // Nuevo objetivo aleatorio
     this.targetType = Phaser.Utils.Array.GetRandom(['stone', 'sand', 'waste', 'wood']);
     this.targetText.setText(`Recolecta: ${this.getEmoji(this.targetType)}`);
   }
@@ -200,7 +190,7 @@ spawnMaterial(type) {
 
 
   updateTimer() {
-  if (this.gameOver) return; // evita seguir restando tiempo después del fin
+  if (this.gameOver) return;
   this.timeLeft--;
   this.timerText.setText(`${this.timeLeft}s`);
   if (this.timeLeft <= 0) {
@@ -210,7 +200,6 @@ spawnMaterial(type) {
 
 
 async endGame() {
-  // Pausar física y detener máquina
   this.physics.pause();
   this.machine.setVelocity(0, 0);
 
@@ -220,12 +209,12 @@ async endGame() {
   if (scoreText) scoreText.innerText = `Puntaje final: ${this.score}`;
   if (modal) modal.style.display = "flex";
 
-  // 🎯 Enviar puntaje al Google Sheet correcto
+  // 🎯 Enviar puntaje al Google Sheet
   try {
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUt6tND5SyxA8_C5h2FnlLXm7dpMAKb7-ZVe7d2tyvHK1fIPJjqEG-NxG42R3wPM-w_g/exec";
     const name = localStorage.getItem("playerName") || "Jugador";
 
-    // 🔹 Importante: incluir el campo `gameType`
+    
   const body = new URLSearchParams({
     type: 'score',
     gameType: 'maquinaria',

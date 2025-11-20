@@ -1,4 +1,4 @@
-// Arranque del juego SOLO una vez (después de registro)
+
 function startPhaser() {
   if (!window.game) {
     window.game = new Phaser.Game(config);
@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
       body
     });
-    // intenta leer JSON, pero no bloquees si no se puede
     const text = await res.text();
     try { return JSON.parse(text); } catch { return { status: 'ok', raw: text }; }
   }
@@ -29,15 +28,16 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     const btn = form.querySelector("button[type='submit']");
-    if (btn.disabled) return; // ⚠️ evita duplicados
+    if (btn.disabled) return; 
     btn.disabled = true;
     btn.textContent = "Registrando...";
 
     const name  = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const phone = document.getElementById("phone").value.trim();
+    const company = document.getElementById("company").value.trim();
 
-    // Evitar registros vacíos
+    
     if (!name || !email || !phone) {
       alert("Por favor completa todos los campos.");
       btn.disabled = false;
@@ -46,10 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      await postForm(WEBAPP_URL, { name, email, phone });
+      await postForm(WEBAPP_URL, { name, email, phone, company });
       localStorage.setItem("playerName", name);
 
-      // ✅ cerrar modal y arrancar el juego
+      
       document.getElementById("registerModal").style.display = "none";
       startPhaser();
     } catch (err) {
@@ -92,9 +92,9 @@ const config = {
     arcade: { debug: false }
   },
   scene: [
-    StartScene,     // Menú
-    GameScene,      // Carretera
-    MaquinariaScene // Minijuego maquinaria (definido en loaderScene.js)
+    StartScene,     
+    GameScene,      
+    MaquinariaScene 
   ]
 };
 
