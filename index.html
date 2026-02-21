@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🚛 Juego Arcade de Camiones</title>
+  <title>TRANSPORTES TRANES</title>
   <link rel="stylesheet" href="style.css"> <!-- estilos externos -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h2 style="color:white;">🚛 Juego Arcade de Camiones</h2>
+  <h2 style="color:white;">🚛TRANSPORTES TRANES</h2>
 
   <!-- Modal de Registro -->
   <div id="registerModal">
@@ -26,12 +27,25 @@
     <p id="finalScore"></p>
     <button onclick="restartGame()">🔄 Volver a jugar</button>
   </div>
+  </div>
+
+  <!-- Modal Instrucciones -->
+  <div id="instructionsModal" class="modal">
+  <div class="modal-content">
+    <h2>Instrucciones</h2>
+    <p>Mueve el camión con ← → para esquivar obstáculos.</p>
+    <p>Recoge cajas para sumar puntos.📦</p>
+    <p>Evita ciclistas, conos y huecos.🚲</p>
+    <button onclick="closeModal('instructionsModal')">Cerrar</button>
+  </div>
 </div>
+
 
   <!-- Phaser -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
 
   <!-- Escenas y lógica del juego -->
+   <script src="modals.js"></script>
   <script src="startScene.js"></script>
   <script src="gameScene.js"></script>
   <script src="main.js"></script>
