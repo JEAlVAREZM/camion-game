@@ -1,39 +1,68 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>🚛 Juego Arcade de Camiones</title>
-  <link rel="stylesheet" href="style.css"> <!-- estilos externos -->
+  <meta charset="UTF-8" />
+  <title>TRANSPORTES TRANES</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <h2 style="color:white;">🚛 Juego Arcade de Camiones</h2>
 
   <!-- Modal de Registro -->
   <div id="registerModal">
     <form id="registerForm">
-      <h2>Registro</h2>
-      <input type="text" id="name" placeholder="Nombre" required />
-      <input type="email" id="email" placeholder="Correo" required />
-      <input type="tel" id="phone" placeholder="Celular" required />
-      <button type="submit">Comenzar</button>
+      <h2>REGISTRO:</h2>
+      <input type="text" id="name" placeholder="NOMBRE" required />
+      <input type="email" id="email" placeholder="CORREO" required />
+      <input type="tel" id="phone" placeholder="CELULAR" required />
+      <input type="text" id="company" placeholder="EMPRESA" required />
+      <button type="submit">COMENZAR</button>
     </form>
   </div>
-  <!-- Modal de Game Over -->
-  <div id="gameOverModal" style="display:none;">
-  <div id="gameOverContent">
-    <h2 id="gameOverTitle">GAME OVER</h2>
-    <p id="gameOverMessage"></p>
-    <p id="finalScore"></p>
-    <button onclick="restartGame()">🔄 Volver a jugar</button>
+
+<!-- Modal Game Over CAMIÓN -->
+<div id="gameOverTruckModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>🚧 Game Over</h2>
+    <p id="truckScoreText">Puntaje final: 0</p>
+    <div class="modal-actions">
+      <button onclick="restartTruck()">🔁 Volver a jugar</button>
+      <button onclick="goToMenu()">🏠 Menú principal</button>
+    </div>
   </div>
 </div>
+
+  <!-- Modal Instrucciones -->
+  <div id="instructionsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>Instrucciones</h2>
+      <p>Camión: ← → para cambiar de carril. Suma con cajas, evita conos, huecos y ciclistas.</p>
+      <p>Maquinaria: mueve la excavadora con ← →, acércate a cajas y llévalas a la volqueta.</p>
+      <button onclick="closeModal('instructionsModal')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- 🔶 Modal Game Over Maquinaria -->
+  <div id="gameOverMaquinariaModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>⏰ Tiempo agotado</h2>
+      <p id="maquinariaScoreText">Puntaje final: 0</p>
+      <button onclick="restartMaquinaria()">🔁 Volver a intentar</button>
+      <button onclick="goToMenu()">🏠 Menú principal</button>
+    </div>
+  </div>
+
+  <!-- Contenedor del juego -->
+  <div id="game-container"></div>
 
   <!-- Phaser -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
 
-  <!-- Escenas y lógica del juego -->
+  <!-- Utilitarios y escenas -->
+  <script src="modals.js"></script>
   <script src="startScene.js"></script>
   <script src="gameScene.js"></script>
+  <script src="MaquinariaScene.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

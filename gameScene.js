@@ -4,6 +4,12 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
+    this.gameOverPlayed = false;
+    this.gameOverSfx = this.sound.add('gameoverSound', { loop: false, volume: 0.7 });
+
+    this.bgMusic = this.sound.add('music', { volume: 0.5, loop: true });
+    this.bgMusic.play();
+    
     this.score = 0;
     this.coneHits = 0;
     this.holeHits = 0;
@@ -12,7 +18,14 @@ class GameScene extends Phaser.Scene {
     this.lanes = [70, 160, 250, 340];
     this.currentLane = 1;
 
-    this.road = this.add.tileSprite(200, 300, 400, 600, 'road');
+    this.road = this.add.tileSprite(
+    this.sys.game.config.width / 2,  // Centrado en X
+    this.sys.game.config.height / 2, // Centrado en Y
+    this.sys.game.config.width,      // Ancho del canvas
+    this.sys.game.config.height,     // Alto del canvas
+    'road'
+    );
+
 
     this.truck = this.physics.add.sprite(this.lanes[this.currentLane], 500, 'truck');
     this.truck.setDisplaySize(64, 128);
@@ -48,7 +61,10 @@ class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.truck, this.holes, (t, h) => this.hitHole(h), null, this);
   }
 
+
+
   update() {
+    this.road.tilePositionY -= 5; // mueve la carretera
     if (this.gameOver) return;
 
     this.road.tilePositionY -= 5;
@@ -99,6 +115,7 @@ class GameScene extends Phaser.Scene {
   // Colisiones
   collectCargo(cargo) {
     cargo.destroy();
+    this.sound.play('pickup', { volume: 0.7 });
     this.score += 10;
     this.scoreText.setText('Puntos: ' + this.score);
   }
@@ -106,6 +123,7 @@ class GameScene extends Phaser.Scene {
   hitObstacle(obstacle) {
     obstacle.destroy();
     this.coneHits++;
+    this.sound.play('crash', { volume: 1 });
     this.score -= 20;
     this.scoreText.setText('Puntos: ' + this.score);
     if (this.coneHits >= 3) this.endGame("🚧 Demasiados conos");
@@ -113,44 +131,61 @@ class GameScene extends Phaser.Scene {
 
   hitCyclist(cyclist) {
     cyclist.destroy();
+    this.sound.play('gameoverSound', { volume: 1 });
     this.endGame("❌ Atropellaste a un ciclista");
   }
 
   hitHole(hole) {
     hole.destroy();
+    this.sound.play('holeSound', { volume: 0.8 });
     this.holeHits++;
     this.score -= 15;
     this.scoreText.setText('Puntos: ' + this.score);
     if (this.holeHits >= 2) this.endGame("🕳️ Demasiados huecos");
   }
 
-  async endGame(message) {
-    this.gameOver = true;
-    this.truck.setVelocity(0);
-    this.cargos.clear(true, true);
-    this.obstacles.clear(true, true);
-    this.cyclists.clear(true, true);
-    this.holes.clear(true, true);
+async endGame(message) {
+  this.gameOver = true;
 
-      // Mostrar modal HTML con la info
-    document.getElementById("gameOverMessage").innerText = message;
-    document.getElementById("finalScore").innerText = "Puntaje final: " + this.score;
-    document.getElementById("gameOverModal").style.display = "flex";
+  if (this.bgMusic) this.bgMusic.stop();
 
-    // ⚡ Enviar puntaje a Google Sheets
-    try {
-      await fetch("https://script.google.com/macros/s/AKfycbxUt6tND5SyxA8_C5h2FnlLXm7dpMAKb7-ZVe7d2tyvHK1fIPJjqEG-NxG42R3wPM-w_g/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: localStorage.getItem("playerName") || "Jugador",
-          score: this.score,
-          date: new Date().toISOString()
-        })
-      });
-      console.log("✅ Puntaje guardado en Sheets");
-    } catch (err) {
-      console.error("❌ Error guardando puntaje en Sheets:", err);
-    }
+  this.truck.setVelocity(0);
+  this.cargos.clear(true, true);
+  this.obstacles.clear(true, true);
+  this.cyclists.clear(true, true);
+  this.holes.clear(true, true);
+
+
+  const msgEl   = document.getElementById("gameOverMessage");
+  const scoreEl = document.getElementById("truckScoreText");
+  const modalEl = document.getElementById("gameOverTruckModal");
+
+  if (msgEl)   msgEl.innerText = message || "🚧 Game Over";
+  if (scoreEl) scoreEl.innerText = `Puntaje final: ${this.score}`;
+  if (modalEl) modalEl.style.display = "flex";
+
+  
+  try {
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUt6tND5SyxA8_C5h2FnlLXm7dpMAKb7-ZVe7d2tyvHK1fIPJjqEG-NxG42R3wPM-w_g/exec";
+    const name = localStorage.getItem("playerName") || "Jugador";
+
+  const body = new URLSearchParams({
+    type: 'score',
+    gameType: 'camion',
+    name,
+    score: String(this.score)
+  }).toString();
+
+    fetch(WEBAPP_URL, { 
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body
+    }).catch(err => console.error("❌ Error guardando puntaje en Sheets:", err));
+
+  } catch (err) {
+    console.error("❌ Error guardando puntaje en Sheets:", err);
   }
+}
+
+
 }
